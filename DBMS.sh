@@ -1,24 +1,32 @@
-#!/usr/bin/bash
+#!/bin/bash
 
-select choice in "Create Database" "List Database" "connect to Database" "Drop Database" "Exit"
+select choice in "Create Database" "List Databases" "connect to Database" "Drop Database" "Exit"
 do
-	case $REPLY in
-		1)
-			echo "create"
-			;;
-		2)
-			ls
-			;;
-		3)
-			echo "connect"
-			;;
-		4)
-			echo "Drop"
-			;;
-		5)
-			exit 0
-			;;
-		*)
-			echo "invalid oprion"
-	esac
+    case $REPLY in
+        1)
+            	read -p "Enter database name: " dir_name
+            	mkdir "$dir_name"
+            	echo "Database '$dir_name' created."
+            	;;
+        2)
+            	echo "Listing All databases:"
+            	ls -d */
+            	;;
+        3)
+		read -p "Enter Database to connect: " dir_name
+            	cd "$dir_name" || echo "Directory not found."
+            	;;
+        4)
+		read -p "Enter database name: " dir_name
+            	rm -r "$dir_name"
+            	echo "Database '$dir_name' deleted."
+           	;;
+        5)
+            	echo "Exiting the software."
+            	exit 0
+            	;;
+        *)
+            	echo "Invalid option. Please try tgain."
+    esac
 done
+
