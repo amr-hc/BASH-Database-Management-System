@@ -14,10 +14,17 @@ do
             	;;
         3)
 		read -p "Enter Database to connect: " dir_name
-            	cd "$dir_name" || echo "Directory not found."
+            	#cd "$dir_name" || echo "Directory not found."
+
+		if [ -d "$dir_name" ]; then
+    			./connect.sh $dir_name
+		else
+    			echo "Database Not Found"
+		fi
+	       	
             	;;
         4)
-		read -p "Enter database name: " dir_name
+		read -p "Enter database name: " $dir_name
             	rm -r "$dir_name"
             	echo "Database '$dir_name' deleted."
            	;;
