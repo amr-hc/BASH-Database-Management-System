@@ -41,7 +41,12 @@ do
     			echo $i
     			while [ $i -gt 0 ];
     			do
-    				echo -n "${types[$i]}:" >> $1/$table_name
+    				if [ $i -eq 1 ]; then
+    					echo -n "${types[$i]}" >> $1/$table_name
+    				else
+    					echo -n "${types[$i]}:" >> $1/$table_name
+    				fi
+
     				((i--))
 			done
 
