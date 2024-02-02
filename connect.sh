@@ -71,9 +71,38 @@ do
 		fi
             	;;
         4)
-		read -p "Enter database name: " dir_name
-            	rm -r "$dir_name"
-            	echo "Database '$dir_name' deleted."
+
+            	
+            	read -p "insert into table name: " table_name
+            	if [ -e "$1/$table_name" ]; then
+    			read -p "insert data : " data
+    			
+    			let erro=0
+    			let n=1
+    			let nf=$(head -n 2 $1/$table_name | tail -n 1 | awk -F: '{print NF}')
+    			((nf++))
+			while [ $nf -gt $n ];
+    			do
+    			right=$(head -n 2 $1/$table_name | tail -n 1 | awk -F: '{print $'"$n"'}')
+    			left=$(echo $data | awk -F: '{print $'"$n"'}')
+			if [[ ! $left =~ $right ]]; then
+	                	((erro++))
+			fi
+			((n++))
+			done
+			
+    			if [[ $erro -eq 0 ]]; then
+	                	echo $data >> $1/$table_name
+	                	echo "Insert Done"
+			else
+				echo "Error in Type of row"
+			fi
+    			
+    		
+		else
+    			echo "Sorry table not found"
+            	fi
+            	
            	;;
         5)
             	echo "Exiting the software."
