@@ -17,6 +17,7 @@ do
 			do
 				read -p "What is the number of columns in the table : " columns_count
 			done
+			declare -a columns
     			declare -a types
 			j=1
 			while [ $columns_count -gt 0 ];
@@ -28,8 +29,10 @@ do
     				types[$columns_count]=$column_type
     				if [ $columns_count -eq 1 ]; then
     					echo -n "$column_name" >> $1/$table_name
+    					columns[$j]=$column_name
     				else
     					echo -n "$column_name:" >> $1/$table_name
+    					columns[$j]=$column_name
     				fi
 
 				((j++))
@@ -49,8 +52,24 @@ do
 
     				((i--))
 			done
-
-    			
+			echo "which Column will be primary key? if you dont want primary key write 0"
+    			select choice in "${columns[@]}"
+    			do
+    				case $REPLY in
+        			[0-9]*)
+        			if [ "${#columns[@]}" -ge "$REPLY" ]; then
+        				echo >> $1/$table_name
+		       			echo $REPLY >> $1/$table_name
+		       			break
+				else
+					echo "Sorry Invalid option"
+				fi
+        			;;
+        			*) echo "Sorry Invalid option";;
+    				
+    				
+    				esac
+    			done
     			
     			
     			echo "Table '$table_name' created."
@@ -128,4 +147,3 @@ do
             	echo "Invalid option. Please try tgain."
     esac
 done
-
