@@ -37,8 +37,26 @@ do
 				done
 				
 				
-    				read -p "column type $j: " column_type
-    				
+    				echo -n "column type $j: "
+    				echo
+    				select choice in "alphate" "intger" "string"
+				do
+    					case $REPLY in
+    					        1)
+            						column_type=[a-z]
+            						break
+            						;;
+            					2)
+            						column_type=[0-9]
+            						break
+            						;;
+            					3)
+            						column_type=[a-zA-Z0-9]
+            						break
+            						;;
+            					*)	echo "Not Valid"
+    				    	esac
+				done
 
     				types[$columns_count]=$column_type
     				if [ $columns_count -eq 1 ]; then
