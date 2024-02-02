@@ -198,7 +198,7 @@ do
 				    	
 				    	' )
 				    	if [[ -z $result ]]; then
-				    		echo " value ( $value ) doesn't exist in the table"
+				    		echo " the value ( $value ) doesn't exist in the table"
 				    	else
 				    		echo "$result"
 				    	fi 
