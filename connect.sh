@@ -132,12 +132,55 @@ do
             	
            	;;
         5)
-            	echo "Exiting the software."
-            	exit 0
+        
+            	
+            	
+            	read -p "enter table to select from: " table
+            	select choice in "select all" "select by certien value"
+            	do
+            		case $REPLY in
+            		1)
+            			sed '2,3d' $1/$table
+            			;;
+            		2)
+			    	if ! [ -e "$1/$table" ]; then
+			    		echo " table doesn't exist"
+			    	else
+				    	read -p "enter value to select by it: " value
+
+				    	result=$( sed '1,3d' $1/$table | awk -v value="$value" -F: '
+				    	{
+				    	        i=1;
+				    	        line="";
+				    		while(i<=NF){
+				    			
+				    			if($i==value){
+				    				line=$0;
+				    			}
+				    			i++;
+				    		}
+				    		if(line != ""){
+				    			print line;
+				    		}
+				    	}
+				    	
+				    	' )
+				    	if [[ -z $result ]]; then
+				    		echo " value ( $value ) doesn't exist in the table"
+				    	else
+				    		echo "$result"
+				    	fi 
+				  fi
+				  ;;
+			*)
+				echo "invalid input"
+			esac
+			 
+            	done
             	;;
         6)
             	echo "Exiting the software."
-            	exit 0
+            	pwd
             	;;
         7)
             	echo "Exiting the software."
