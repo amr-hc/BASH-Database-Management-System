@@ -13,22 +13,28 @@ do
     			touch $1/$table_name
     			
     			read -p "What is the number of columns in the table : " columns_count
+			while (( $columns_count <= 0 ))
+			do
+				read -p "What is the number of columns in the table : " columns_count
+			done
     			declare -a types
-    			while [ $columns_count -gt 0 ];
+			j=1
+			while [ $columns_count -gt 0 ];
     			do
     				#echo "$columns_count"
-				read -p "column name $columns_count: " column_name
-    				read -p "column type $columns_count: " column_type
-    				
-    				types[$columns_count]=$column_type	
+				read -p "column name $j: " column_name
+    				read -p "column type $j: " column_type
+
+    				types[$columns_count]=$column_type
     				if [ $columns_count -eq 1 ]; then
     					echo -n "$column_name" >> $1/$table_name
     				else
     					echo -n "$column_name:" >> $1/$table_name
     				fi
-    				
+
+				((j++))
     				((columns_count--))
-    				
+
     			done
     			echo >> $1/$table_name
     			let i=${#types[@]}
@@ -47,12 +53,17 @@ do
             	
             	;;
         2)
-            	echo "Listing All databases:"
-            	ls -d */
+            	echo "tables in database are: "
+            	ls  $1
             	;;
         3)
-		read -p "Enter Database to connect: " dir_name
-            	cd "$dir_name" || echo "Directory not found."
+		read -p "Enter a table name : " name
+            	cd $1
+		if [ -e $name ]; then
+		       rm $name
+		else
+			echo "table doesn't exist"
+		fi
             	;;
         4)
 		read -p "Enter database name: " dir_name
