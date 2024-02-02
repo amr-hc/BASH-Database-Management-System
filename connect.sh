@@ -92,11 +92,19 @@ do
 			done
 			
     			if [[ $erro -eq 0 ]]; then
-	                	echo $data >> $1/$table_name
-	                	echo "Insert Done"
+    				let s=$(head -n 3 $1/$table_name | tail -n 1)
+				value=$(echo $data | awk -F: '{print $'"$s"'}')
+				let check=$(awk -F: 'BEGIN{found=0} {if(NR>3) if ($'"$s"' == "'$value'") found=1} END{print found}' $1/$table_name)
+	                	if [[ $check -eq 0 ]]; then
+					echo $data >> $1/$table_name
+					echo "Insert Done"
+				else
+					echo "sorry Dublicate primary key"
+				fi
 			else
 				echo "Error in Type of row"
 			fi
+			
     			
     		
 		else
