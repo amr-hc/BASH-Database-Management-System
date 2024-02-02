@@ -1,6 +1,7 @@
 #!/bin/bash
 
 echo "DataBase Connected $1" 
+source funcations.sh
 
 select choice in "Create Table" "List Tables" "Drop Table" "Insert into Table" "Select From Table" "Delete From Table" "Update Table"
 do
@@ -17,42 +18,27 @@ do
 			do
 				read -p "What is the number of columns in the table : " columns_count
 			done
-			declare -a columns=("amr","ahmed")
+			declare -a columns
     			declare -a types
 			j=1
 			while [ $columns_count -gt 0 ];
     			do
     				#echo "$columns_count"
 				read -p "column name $j: " column_name
-				
-				
-				for column in "${columns[@]}"; do
-    					if [[ "$column" == "$column_name" ]]; then
-        					find_column_name=1
-        					break
-        				else
-        					find_column_name=0
-    					fi
-    				done
+				catch_duplicate
 				
 				while [[ ! $column_name =~ ^[a-zA-Z_]+[a-zA-Z0-9_]*$ || $find_column_name -eq 1 ]];
 				do
 					echo "Not Valid"
 					read -p "column name $j: " column_name
 					
-					for element in "${columns[@]}"; do
-    						if [[ "$element" == "$column_name" ]]; then
-        						find_column_name=1
-        						break
-        					else
-        						find_column_name=0
-    						fi
-					done
+					catch_duplicate
 					
 				done
 				
 				
     				read -p "column type $j: " column_type
+    				
 
     				types[$columns_count]=$column_type
     				if [ $columns_count -eq 1 ]; then
