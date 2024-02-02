@@ -1,6 +1,7 @@
 #!/bin/bash
 
 echo "DataBase Connected $1" 
+source funcations.sh
 
 select choice in "Create Table" "List Tables" "Drop Table" "Insert into Table" "Select From Table" "Delete From Table" "Update Table"
 do
@@ -24,7 +25,38 @@ do
     			do
     				#echo "$columns_count"
 				read -p "column name $j: " column_name
-    				read -p "column type $j: " column_type
+				catch_duplicate
+				
+				while [[ ! $column_name =~ ^[a-zA-Z_]+[a-zA-Z0-9_]*$ || $find_column_name -eq 1 ]];
+				do
+					echo "Not Valid"
+					read -p "column name $j: " column_name
+					
+					catch_duplicate
+					
+				done
+				
+				
+    				echo -n "column type $j: "
+    				echo
+    				select choice in "alphate" "intger" "string"
+				do
+    					case $REPLY in
+    					        1)
+            						column_type=[a-z]
+            						break
+            						;;
+            					2)
+            						column_type=[0-9]
+            						break
+            						;;
+            					3)
+            						column_type=[a-zA-Z0-9]
+            						break
+            						;;
+            					*)	echo "Not Valid"
+    				    	esac
+				done
 
     				types[$columns_count]=$column_type
     				if [ $columns_count -eq 1 ]; then
