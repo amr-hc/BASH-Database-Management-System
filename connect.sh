@@ -8,104 +8,112 @@ do
     case $REPLY in
         1)
             	read -p "Enter table name: " table_name
-            	if [ -e "$1/$table_name" ]; then
+            	if [[ ! "$table_name" =~ ^[a-zA-Z_]+ || ! "$table_name" =~ [a-zA-Z0-9_]+$ ]]; then
+            		echo "the name must consist of { _ or character or number } but can't start with number"
+            	elif [[ -e "$1/$table_name"  ]]; then
     			echo "Sorry there is table have same name"
 		else
-    			touch $1/$table_name
     			
     			read -p "What is the number of columns in the table : " columns_count
-			while (( $columns_count <= 0 ))
-			do
-				read -p "What is the number of columns in the table : " columns_count
-			done
-			declare -a columns
-    			declare -a types
-			j=1
-			while [ $columns_count -gt 0 ];
-    			do
-    				#echo "$columns_count"
-				read -p "column name $j: " column_name
-				catch_duplicate
-				
-				while [[ ! $column_name =~ ^[a-zA-Z_]+[a-zA-Z0-9_]*$ || $find_column_name -eq 1 ]];
+			if [[ $columns_count =~ [0-9]+ ]]; then
+				touch $1/$table_name
+				while (( $columns_count <= 0 )) 
 				do
-					echo "Not Valid"
+					read -p "What is the number of columns in the table : " columns_count
+				done
+				declare -a columns
+	    			declare -a types
+				j=1
+				while [ $columns_count -gt 0 ];
+	    			do
+	    				#echo "$columns_count"
 					read -p "column name $j: " column_name
-					
 					catch_duplicate
 					
+					while [[ ! $column_name =~ ^[a-zA-Z_]+[a-zA-Z0-9_]*$ || $find_column_name -eq 1 ]];
+					do
+						echo "Not Valid"
+						read -p "column name $j: " column_name
+						
+						catch_duplicate
+						
+					done
+					
+					
+	    				echo -n "column type $j: "
+	    				echo
+	    				select choice in "alphate" "intger" "string"
+					do
+	    					case $REPLY in
+	    					        1)
+		    						column_type=[a-z]
+		    						break
+		    						;;
+		    					2)
+		    						column_type=[0-9]
+		    						break
+		    						;;
+		    					3)
+		    						column_type=[a-zA-Z0-9]
+		    						break
+		    						;;
+		    					*)	echo "Not Valid"
+	    				    	esac
+					done
+
+	    				types[$columns_count]=$column_type
+	    				if [ $columns_count -eq 1 ]; then
+	    					echo -n "$column_name" >> $1/$table_name
+	    					columns[$j]=$column_name
+	    				else
+	    					echo -n "$column_name:" >> $1/$table_name
+	    					columns[$j]=$column_name
+	    				fi
+
+					((j++))
+	    				((columns_count--))
+
+	    			done
+	    			echo >> $1/$table_name
+	    			let i=${#types[@]}
+	    			echo $i
+	    			while [ $i -gt 0 ];
+	    			do
+	    				if [ $i -eq 1 ]; then
+	    					echo -n "${types[$i]}" >> $1/$table_name
+	    				else
+	    					echo -n "${types[$i]}:" >> $1/$table_name
+	    				fi
+
+	    				((i--))
 				done
-				
-				
-    				echo -n "column type $j: "
-    				echo
-    				select choice in "alphate" "intger" "string"
-				do
-    					case $REPLY in
-    					        1)
-            						column_type=[a-zA-Z]
-            						break
-            						;;
-            					2)
-            						column_type=[0-9]
-            						break
-            						;;
-            					3)
-            						column_type=[a-zA-Z0-9]
-            						break
-            						;;
-            					*)	echo "Not Valid"
-    				    	esac
-				done
 
-    				types[$columns_count]=$column_type
-    				if [ $columns_count -eq 1 ]; then
-    					echo -n "$column_name" >> $1/$table_name
-    					columns[$j]=$column_name
-    				else
-    					echo -n "$column_name:" >> $1/$table_name
-    					columns[$j]=$column_name
-    				fi
+				echo "which Column will be primary key? if you dont want primary key write 0"
+	    			select choice in "${columns[@]}"
+	    			do
+	    				case $REPLY in
+					[0-9]*)
+					if [ "${#columns[@]}" -ge "$REPLY" ]; then
+						echo >> $1/$table_name
+			       			echo $REPLY >> $1/$table_name
+			       			break
+					else
+						echo "Sorry Invalid option"
+					fi
+					;;
+					*) echo "Sorry Invalid option";;
+	    				
+	    				
+	    				esac
+	    			done
+	    			
+	    			unset types
+    				unset columns
+	    			echo "Table '$table_name' created."
+	    		else
+	    			echo "input must be a number"
+	    		fi
 
-				((j++))
-    				((columns_count--))
-
-    			done
-    			echo >> $1/$table_name
-    			let i=${#types[@]}
-    			echo $i
-    			while [ $i -gt 0 ];
-    			do
-    				if [ $i -eq 1 ]; then
-    					echo -n "${types[$i]}" >> $1/$table_name
-    				else
-    					echo -n "${types[$i]}:" >> $1/$table_name
-    				fi
-
-    				((i--))
-			done
-			echo "which Column will be primary key? if you dont want primary key write 0"
-    			select choice in "${columns[@]}"
-    			do
-    				case $REPLY in
-        			[0-9]*)
-        			if [ "${#columns[@]}" -ge "$REPLY" ]; then
-        				echo >> $1/$table_name
-		       			echo $REPLY >> $1/$table_name
-		       			break
-				else
-					echo "Sorry Invalid option"
-				fi
-        			;;
-        			*) echo "Sorry Invalid option";;
-    				
-    				
-    				esac
-    			done
-    			
-    			unset types
-    			unset columns
-    			echo "Table '$table_name' created."
 		fi
             	
             	;;
@@ -218,8 +226,28 @@ do
             	if ! [ -e "$1/$table" ]; then
             		echo " table doesn't exist"
             	else
-            		declare -a columns_names=$(awk -F: '{j=1;if(NR == 1){while(j<=NF){columns_names[j]=$j;print columns_names[j];++j}}}' $1/$table)
-			nf=$(awk -F: '{j=1;if(NR == 1){print NF}}' $1/$table)
+            		declare -a columns_names=$(awk -F: '
+            		{
+            			j=1;
+            			if(NR == 1)
+            			{
+		    			while(j<=NF)
+		    			{
+			    		columns_names[j]=$j;
+			    		print columns_names[j];
+			    		++j;
+		    		
+		    			}
+            			}
+            		' $1/$table)
+            		
+			nf=$(awk -F: '
+			{
+				j=1;
+				if(NR == 1)
+				{print NF}
+			}
+			' $1/$table)
             		select choice in ${columns_names[@]}
             		do
     				case $REPLY in
@@ -232,11 +260,20 @@ do
         				
 		       			read -p "enter a value to delete : " value
 		       			
-		       			declare matched_Rows=$(awk -F: '{j="'$REPLY'";{if($j == "'$value'" && NR > 3) print NR}}' $1/$table)
+		       			declare matched_Rows=$(awk -F: '
+		       			{
+		       				j="'$REPLY'";
+		       			{
+		       				if($j == "'$value'" && NR > 3)
+		       			 	print NR
+		       			}
+		       			}
+		       			' $1/$table)
 
 					
 					if [ -n "$matched_Rows" ]; then
-						IFS=' ' declare -a row_numbers=($matched_Rows)
+						IFS=' ' 
+						declare -a row_numbers=($matched_Rows)
     						sed -i "$(printf '%sd;' "${row_numbers[@]}")" "$1/$table"
     						echo "Deleted Done"
 					else
@@ -250,8 +287,9 @@ do
 				else
 					echo "Sorry Invalid option"
 				fi
-        			;;
-        			*) echo "Sorry Invalid option";;
+        				;;
+        			*) echo "Sorry Invalid option"
+        				;;
     				
     				
     				esac
