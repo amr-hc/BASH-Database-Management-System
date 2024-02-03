@@ -8,11 +8,13 @@ do
 		if [[ -e $dir_name ]]; then
 			echo " this name is used "
 		else
-			if [[ $dir_name = [a-z]* || $dir_name = [A-Z]* || $dir_name = _* ]]; then
+		
+			if [[ ! "$dir_name" =~ ^[a-zA-Z_]+ || ! "$dir_name" =~ [a-zA-Z0-9_]+$ ]]; then
+				echo "invalid name, the name sould consist of { _ or characters }"
+			else
+				
 				mkdir "$dir_name"
 	                	echo "Database '$dir_name' created."
-			else
-				echo "invalid name, the name sould start with { _ or character }"
 			fi
 		fi
             	;;
@@ -22,7 +24,6 @@ do
             	;;
         3)
 		read -p "Enter Database to connect: " dir_name
-            	#cd "$dir_name" || echo "Directory not found."
 
 		if [ -d "$dir_name" ]; then
     			./connect.sh $dir_name

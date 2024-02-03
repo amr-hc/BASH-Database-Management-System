@@ -164,55 +164,63 @@ do
             	
            	;;
         5)
-        
-            	
-            	
-            	read -p "enter table to select from: " table
-            	select choice in "select all" "select by certien value"
-            	do
-            		case $REPLY in
-            		1)
-            			sed '2,3d' $1/$table
-            			;;
-            		2)
-			    	if ! [ -e "$1/$table" ]; then
-			    		echo " table doesn't exist"
-			    	else
-				    	read -p "enter value to select by it: " value
 
-				    	result=$( sed '1,3d' $1/$table | awk -v value="$value" -F: '
-				    	{
-				    	        i=1;
-				    	        line="";
-				    		while(i<=NF){
-				    			
-				    			if($i==value){
-				    				line=$0;
-				    			}
-				    			i++;
-				    		}
-				    		if(line != ""){
-				    			print line;
-				    		}
-				    	}
-				    	
-				    	' )
-				    	if [[ -z $result ]]; then
-				    		echo " the value ( $value ) doesn't exist in the table"
-				    	else
-				    		echo "$result"
-				    	fi 
-				  fi
-				  ;;
-			*)
-				echo "invalid input"
-			esac
-			 
-            	done
+            	read -p "enter table to select from: " table
+            	if ! [ -e "$1/$table" ]; then
+            		echo " table doesn't exist"
+            	else
+		    	select choice in "select all" "select by certien value"
+		    	do
+		    		case $REPLY in
+		    		1)
+			    			sed '2,3d' $1/$table
+			    			#./connect.sh $1
+			    			;;
+		    		2)
+
+					    	read -p "enter value to select by it: " value
+
+					    	result=$( sed '1,3d' $1/$table | awk -v value="$value" -F: '
+					    	{
+					    	        i=1;
+					    	        line="";
+					    		while(i<=NF){
+					    			
+					    			if($i==value){
+					    				line=$0;
+					    			}
+					    			i++;
+					    		}
+					    		if(line != ""){
+					    			print line;
+					    		}
+					    	}
+					    	
+					    	' )
+					    	if [[ -z $result ]]; then
+					    		echo " the value ( $value ) doesn't exist in the table"
+					    	else
+					    		echo "$result"
+					    	fi 
+					  
+					  	;;
+				*)
+						echo "invalid input"
+						;;
+				esac
+				 
+		    	done
+		    fi
             	;;
         6)
-            	echo "Exiting the software."
-            	pwd
+        	read -p "enter table to delete from: " table
+            	if ! [ -e "$1/$table" ]; then
+            		echo " table doesn't exist"
+            	else
+            		read -p " enter a value to delete by it: " value
+            		sed -i "/$value/d" $1/$table
+            	fi
+            	
             	;;
         7)
             	echo "Exiting the software."
