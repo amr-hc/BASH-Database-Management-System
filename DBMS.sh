@@ -10,7 +10,7 @@ do
 		else
 		
 			if [[ ! "$dir_name" =~ ^[a-zA-Z_]+ || ! "$dir_name" =~ [a-zA-Z0-9_]+$ ]]; then
-				echo "invalid name, the name sould consist of { _ or characters }"
+				echo "the name must consist of { _ or character or number } but can't start with number"
 			else
 				
 				mkdir "$dir_name"
