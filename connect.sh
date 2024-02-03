@@ -103,7 +103,8 @@ do
     				esac
     			done
     			
-    			
+    			unset types
+    			unset columns
     			echo "Table '$table_name' created."
 		fi
             	
