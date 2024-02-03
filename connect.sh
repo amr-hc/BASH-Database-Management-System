@@ -218,8 +218,56 @@ do
             	if ! [ -e "$1/$table" ]; then
             		echo " table doesn't exist"
             	else
-            		read -p " enter a value to delete by it: " value
-            		sed -i "/$value/d" $1/$table
+            		declare -a columns_names=$(awk -F: '{j=1;if(NR == 1){while(j<=NF){columns_names[j]=$j;print columns_names[j];++j}}}' $1/$table)
+			nf=$(awk -F: '{j=1;if(NR == 1){print NF}}' $1/$table)
+            		select choice in ${columns_names[@]}
+            		do
+    				case $REPLY in
+    				0)
+    					echo "Sorry Invalid option"
+    					
+    					;;
+        			[0-9]*)
+        			if [ $nf -ge "$REPLY" ]; then
+        				
+		       			read -p "enter a value to delete : " value
+		       			
+		       			declare matched_Rows=$(awk -F: '{j="'$REPLY'";{if($j == "'$value'" && NR > 3) print NR}}' $1/$table)
+
+
+					#echo "$matched_Rows"
+					
+					if [ -n "$matched_Rows" ]; then
+						IFS=' ' declare -a row_numbers=($matched_Rows)
+    						sed -i "$(printf '%sd;' "${row_numbers[@]}")" "$1/$table"
+    						echo "Deleted Done"
+					else
+    						echo "Not found any matched"
+					fi
+					
+					unset matched_Rows
+    					unset row_numbers
+
+		       			break
+				else
+					echo "Sorry Invalid option"
+				fi
+        			;;
+        			*) echo "Sorry Invalid option";;
+    				
+    				
+    				esac
+            		done
+            		#read -p " select column will search in : " value
+            		
+            		
+            	
+            	
+            	
+            	
+            	
+            		#read -p " enter a value to delete by id: " value
+            		#sed -i "/$value/d" $1/$table
             	fi
             	
             	;;
