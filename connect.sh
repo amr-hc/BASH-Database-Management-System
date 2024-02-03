@@ -341,10 +341,17 @@ do
 										
 										primary_column=$(head -n 3 $1/$table | tail -n 1)
 										
-										while [ "$primary_column" -eq "$target_column" ] && [ "${#row_numbers[*]}" -gt 1 ] && [ "$target_column" -gt "$nf" ] || [ "$target_column" -eq 0 ]; 
+										while [ "$primary_column" -eq "$target_column" ] && [ "${#row_numbers[*]}" -gt 1 ] || [ "$target_column" -gt "$nf" ] || [ "$target_column" -eq 0 ]; 
 										do
 										    echo -e "Sorry, can't change in this column because \nit is a primary key and matched with 2 or more rows."
 										    read -p "Please enter another column number: " target_column
+										    
+										    while ! [[ "$target_column" =~ ^[0-9]+$ ]]; do
+
+										    	read -p "must write number : " target_column
+										    done
+										    
+										    
 										done
 
 						    					
