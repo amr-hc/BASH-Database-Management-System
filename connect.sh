@@ -43,7 +43,7 @@ do
 				do
     					case $REPLY in
     					        1)
-            						column_type=[a-z]
+            						column_type=[a-zA-Z]
             						break
             						;;
             					2)
@@ -234,8 +234,6 @@ do
 		       			
 		       			declare matched_Rows=$(awk -F: '{j="'$REPLY'";{if($j == "'$value'" && NR > 3) print NR}}' $1/$table)
 
-
-					#echo "$matched_Rows"
 					
 					if [ -n "$matched_Rows" ]; then
 						IFS=' ' declare -a row_numbers=($matched_Rows)
@@ -258,22 +256,112 @@ do
     				
     				esac
             		done
-            		#read -p " select column will search in : " value
-            		
-            		
-            	
-            	
-            	
-            	
-            	
-            		#read -p " enter a value to delete by id: " value
-            		#sed -i "/$value/d" $1/$table
+
             	fi
             	
             	;;
         7)
-            	echo "Exiting the software."
-            	exit 0
+        	read -p "enter table to update from: " table
+            	if ! [ -e "$1/$table" ]; then
+            		echo " table doesn't exist"
+            	else
+            		declare -a columns_names=$(awk -F: '{j=1;if(NR == 1){while(j<=NF){columns_names[j]=$j;print columns_names[j];++j}}}' $1/$table)
+			nf=$(awk -F: '{j=1;if(NR == 1){print NF}}' $1/$table)
+			echo "which column you will search in ?"
+            		select choice in ${columns_names[@]}
+            		do
+    				case $REPLY in
+    				0)
+    					echo "Sorry Invalid option"
+    					
+    					;;
+        			[0-9]*)
+        			if [ $nf -ge "$REPLY" ]; then
+        				
+		       			read -p "enter a value to search $choice = " value
+		       			
+		       			declare matched_Rows=$(awk -F: '{j="'$REPLY'";{if($j == "'$value'" && NR > 3) print NR}}' $1/$table)
+
+					
+					if [ -n "$matched_Rows" ]; then
+						IFS=' ' declare -a row_numbers=($matched_Rows)
+						
+    						#echo "${#row_numbers[*]}"
+    						
+    						echo "which column will change value?"
+    						select choice in ${columns_names[@]}
+					    		do
+				    				case $REPLY in
+				    				0)
+				    					echo "Sorry Invalid option"
+				    					
+				    					;;
+								[0-9]*)
+									if [ $nf -ge "$REPLY" ]; then
+										echo "good"
+										target_column=$REPLY
+										
+										primary_column=$(head -n 3 $1/$table | tail -n 1)
+										
+										while [ "$primary_column" -eq "$target_column" ] && [ "${#row_numbers[*]}" -gt 1 ] && [ "$target_column" -gt "$nf" ] || [ "$target_column" -eq 0 ]; 
+										do
+										    echo -e "Sorry, can't change in this column because \nit is a primary key and matched with 2 or more rows."
+										    read -p "Please enter another column number: " target_column
+										done
+
+						    					
+										
+										
+										read -p "new value : " value_change
+										
+										
+										typec=$(head -n 2 $1/$table | tail -n 1 | awk -F: '{print $'"$target_column"'}')
+										
+										while [[ ! $value_change =~ $typec ]]; do
+											echo "Sorry type of value not allow"
+											read -p "new value : " value_change
+										done
+										
+										
+										
+										break
+									else
+										echo "Not Valid"
+									fi
+
+									;;
+								*)	echo "Sorry Invalid option";;
+								
+								esac
+							done
+    						
+    						
+    						
+    						#target_column=2
+    						#value_change="loasyzz"
+    						awk -F: -v numbers="${row_numbers[*]}" 'BEGIN {split(numbers, arr, " "); for (i in arr) target_rows[arr[i]] = 1} NR in target_rows {OFS=":";$"'$target_column'"="'$value_change'"} {print $0}' "$1/$table" > temp_file && mv temp_file "$1/$table"
+
+    						echo "Update Done"
+					else
+    						echo "Not found any matched"
+					fi
+					
+					unset matched_Rows
+    					unset row_numbers
+
+		       			break
+				else
+					echo "Sorry Invalid option"
+				fi
+        			;;
+        			*) echo "Sorry Invalid option";;
+    				
+    				
+    				esac
+            		done
+
+            	fi
+            	
             	;;
         *)
             	echo "Invalid option. Please try tgain."
