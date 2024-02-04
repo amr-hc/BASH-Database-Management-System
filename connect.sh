@@ -1,15 +1,15 @@
 #!/bin/bash
 
-echo "DataBase Connected $1" 
+echo "DataBase $1" 
 source funcations.sh
-
+echo "--------------------------------------------------------------------------------"
 select choice in "Create Table" "List Tables" "Drop Table" "Insert into Table" "Select From Table" "Delete From Table" "Update Table"
 do
     case $REPLY in
         1)
             	read -p "Enter table name: " table_name
-            	if [[ ! "$table_name" =~ ^[a-zA-Z_]+ || ! "$table_name" =~ [a-zA-Z0-9_]+$ ]]; then
-            		echo "the name must consist of { _ or character or number } but can't start with number"
+            	if [[ ! "$table_name" =~ ^[a-zA-Z_]+ || ! "$table_name" =~ [a-zA-Z0-9_]+$  || "$table_name" =~ [[:space:]] ]]; then
+				echo "the name must consist of { _ or character or number } but can't start with number or have a space in it"
             	elif [[ -e "$1/$table_name"  ]]; then
     			echo "Sorry there is table have same name"
 		else
@@ -110,6 +110,7 @@ do
 	    			unset types
     				unset columns
 	    			echo "Table '$table_name' created."
+	    			./connect.sh $1
 	    		else
 	    			echo "input must be a number"
 	    		fi
@@ -119,15 +120,21 @@ do
             	;;
         2)
             	echo "tables in database are: "
-            	ls  $1
+            	echo "---------"
+            	ls  $1 | sed ''
+            	echo "---------"
+            	./connect.sh $1
             	;;
         3)
 		read -p "Enter a table name : " name
-            	cd $1
-		if [ -e $name ]; then
-		       rm $name
+
+		if [ -e "$1/$name" ]; then
+		       rm "$1/$name"
+		       echo "table $name deleted"
+		       ./connect.sh $1
 		else
 			echo "table doesn't exist"
+			./connect.sh $1
 		fi
             	;;
         4)
@@ -135,7 +142,9 @@ do
             	
             	read -p "insert into table name: " table_name
             	if [ -e "$1/$table_name" ]; then
-    			read -p "insert data : " data
+            		echo -e "columns of this table are: \n" 
+            		echo -e " 			$( sed -n '1p' "$1/$table_name" )\n"
+    			read -p "insert data as that formate: " data
     			
     			let erro=0
     			let n=1
@@ -178,12 +187,16 @@ do
             	if ! [ -e "$1/$table" ]; then
             		echo " table doesn't exist"
             	else
-		    	select choice in "select all" "select by certien value"
+		    	select choice in "select all" "select by certien value" "back to table menu"
 		    	do
 		    		case $REPLY in
-		    		1)
-			    			sed '2,3d' $1/$table
-			    			#./connect.sh $1
+		    		1)		
+		    				rowCount=$( wc -l < "$1/$table" )
+		    				if (( rowCount <= 3 )); then 
+		    					echo "table is empty"
+		    				else
+			    				sed '2,3d' $1/$table
+			    			fi
 			    			;;
 		    		2)
 
@@ -213,6 +226,9 @@ do
 					    	fi 
 					  
 					  	;;
+				3)		
+						./connect.sh $1
+						;;
 				*)
 						echo "invalid input"
 						;;
@@ -238,6 +254,7 @@ do
 			    		++j;
 		    		
 		    			}
+            			}
             			}
             		' $1/$table)
             		

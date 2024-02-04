@@ -1,5 +1,4 @@
 id:name:phone:adress
 [0-9]:[a-z]:[0-9]:[a-z]
 1
-10:ameer:0101010:cairo
-12:amr:102012010:alex
+12:amr:200202:alex

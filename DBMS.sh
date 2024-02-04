@@ -1,7 +1,9 @@
 #!/bin/bash
-
+echo "------------------------------- WELCOME TO  DBMS -------------------------------"
+echo " => PLZ select option from the following: "
 select choice in "Create Database" "List Databases" "connect to Database" "Drop Database" "Exit"
 do
+echo "--------------------------------------------------------------------------------"
     case $REPLY in
         1)
             	read -p "Enter database name: " dir_name
@@ -9,8 +11,8 @@ do
 			echo " this name is used "
 		else
 		
-			if [[ ! "$dir_name" =~ ^[a-zA-Z_]+ || ! "$dir_name" =~ [a-zA-Z0-9_]+$ ]]; then
-				echo "the name must consist of { _ or character or number } but can't start with number"
+			if [[ ! "$dir_name" =~ ^[a-zA-Z_]+ || ! "$dir_name" =~ [a-zA-Z0-9_]+$  || "$dir_name" =~ [[:space:]] ]]; then
+				echo "the name must consist of { _ or character or number } but can't start with number or have a space in it"
 			else
 				
 				mkdir "$dir_name"
@@ -20,7 +22,9 @@ do
             	;;
         2)
             	echo "Listing All databases:"
-            	ls -d */
+            	echo "---------"
+            	ls -d */ | sed 's:/$::'
+		echo "---------"
             	;;
         3)
 		read -p "Enter Database to connect: " dir_name
@@ -44,5 +48,6 @@ do
         *)
             	echo "Invalid option. Please try tgain."
     esac
+    
 done
 
