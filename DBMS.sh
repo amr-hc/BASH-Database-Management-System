@@ -20,7 +20,7 @@ while true; do
 			fi
 		fi
             	;;
-        show\ database)
+        show\ databases)
             	echo "Listing All databases:"
             	echo "---------"
             	ls -d */ | sed 's:/$::'
@@ -36,14 +36,14 @@ while true; do
 		fi
 	       	
             	;;
-        remove\ database\ *)
+        drop\ database\ *)
         	dir_name=$(echo $REPLY | awk -F" " '{print $3}')
             	rm -r "$dir_name"
             	echo "Database '$dir_name' deleted."
            	;;
         exit)
-            	echo "Exiting the software."
-            	exit 0
+            	echo "Exiting the DBMS."
+            	exit 
             	;;
         *)
             	echo "Syntax Error."

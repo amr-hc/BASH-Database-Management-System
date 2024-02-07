@@ -19,6 +19,7 @@ do
 				touch $1/$table_name
 				while (( $columns_count <= 0 )) 
 				do
+					echo "coulmns number must be positive"
 					read -p "What is the number of columns in the table : " columns_count
 				done
 				declare -a columns
@@ -92,21 +93,20 @@ do
 	    				((i--))
 				done
 
-				echo "which Column will be primary key? if you dont want primary key write 0"
+				echo "which Column will be primary key? "
 	    			select choice in "${columns[@]}"
 	    			do
 	    				case $REPLY in
-					[0-9]*)
+					[1-9]*)
 					if [ "${#columns[@]}" -ge "$REPLY" ]; then
 						echo >> $1/$table_name
 			       			echo $REPLY >> $1/$table_name
 			       			break
 					else
-						echo "Sorry Invalid option"
-						#message
+						echo "you should choose from the provided columns"
 					fi
 					;;
-					*) echo "Sorry Invalid option";;
+					*) echo "Invalid option, you must select from columns in the table";;
 	    				
 	    				
 	    				esac
@@ -115,11 +115,12 @@ do
 	    			unset types
     				unset columns
 	    			echo "Table '$table_name' created."
+	    			sleep 2
 	    			clear
 	    			./connect.sh $1
 	    		else
-	    			echo "input must be a number"
-	    			#message
+	    			echo "columns count must be a number"
+	    			
 	    		fi
 
 		fi
@@ -130,6 +131,7 @@ do
             	echo "---------"
             	ls  $1 | sed ''
             	echo "---------"
+            	read -p "press a key to continue. " input
             	clear
             	./connect.sh $1
             	;;
@@ -139,9 +141,13 @@ do
 		if [ -e "$1/$name" ]; then
 		       rm "$1/$name"
 		       echo "table $name deleted"
+		       sleep 2
+		       clear
 		       ./connect.sh $1
 		else
 			echo "table doesn't exist"
+			sleep 4
+		       	clear
 			./connect.sh $1
 		fi
             	;;
@@ -169,17 +175,20 @@ do
 			done
 			
     			if [[ $erro -eq 0 ]]; then
-    				let s=$(head -n 3 $1/$table_name | tail -n 1)
-				value=$(echo $data | awk -F: '{print $'"$s"'}')
-				let check=$(awk -F: 'BEGIN{found=0} {if(NR>3) if ($'"$s"' == "'$value'") found=1} END{print found}' $1/$table_name)
+    				let primaryKey=$(head -n 3 $1/$table_name | tail -n 1)
+				value=$(echo $data | awk -F: '{print $'"$primaryKey"'}')
+				let check=$(awk -F: 'BEGIN{found=0} {if(NR>3) if ($'"$primaryKey"' == "'$value'") found=1} END{print found}' $1/$table_name)
 	                	if [[ $check -eq 0 ]]; then
 					echo $data >> $1/$table_name
 					echo "Insert Done"
+					sleep 3
+					clear
+					./connect.sh $1
 				else
 					echo "sorry Dublicate primary key"
 				fi
 			else
-				echo "Error in Type of row"
+				echo "values entered don't match datatype of columns"
 			fi
 			
     			
@@ -235,10 +244,11 @@ do
 					  
 					  	;;
 				3)		
+						clear
 						./connect.sh $1
 						;;
 				*)
-						echo "invalid input"
+						echo "invalid option"
 						;;
 				esac
 				 
@@ -277,7 +287,7 @@ do
             		do
     				case $REPLY in
     				0)
-    					echo "Sorry Invalid option"
+    					echo "you must select from provided option"
     					
     					;;
         			[0-9]*)
@@ -300,7 +310,10 @@ do
 						IFS=' ' 
 						declare -a row_numbers=($matched_Rows)
     						sed -i "$(printf '%sd;' "${row_numbers[@]}")" "$1/$table"
-    						echo "Deleted Done"
+    						echo "Deleted Done."
+    						sleep 3
+    						clear
+    						./connect.sh $1
 					else
     						echo "Not found any matched"
 					fi
@@ -310,10 +323,10 @@ do
 
 		       			break
 				else
-					echo "Sorry Invalid option"
+					echo "you must select from provided option"
 				fi
         				;;
-        			*) echo "Sorry Invalid option"
+        			*) echo "you must select from provided option"
         				;;
     				
     				
@@ -349,7 +362,7 @@ do
 					if [ -n "$matched_Rows" ]; then
 						IFS=' ' declare -a row_numbers=($matched_Rows)
 						
-    						#echo "${#row_numbers[*]}"
+    						
     						
     						echo "which column will change value?"
     						select choice in ${columns_names[@]}
@@ -361,7 +374,7 @@ do
 				    					;;
 								[0-9]*)
 									if [ $nf -ge "$REPLY" ]; then
-										echo "good"
+									
 										target_column=$REPLY
 										
 										primary_column=$(head -n 3 $1/$table | tail -n 1)
@@ -407,11 +420,13 @@ do
     						
     						
     						
-    						#target_column=2
-    						#value_change="loasyzz"
+    						
     						awk -F: -v numbers="${row_numbers[*]}" 'BEGIN {split(numbers, arr, " "); for (i in arr) target_rows[arr[i]] = 1} NR in target_rows {OFS=":";$"'$target_column'"="'$value_change'"} {print $0}' "$1/$table" > temp_file && mv temp_file "$1/$table"
 
     						echo "Update Done"
+    						sleep 3 
+    						clear
+    						./connect.sh $1
 					else
     						echo "Not found any matched"
 					fi
@@ -437,7 +452,7 @@ do
         	./DBMS.sh
         	;;
         9)	
-        	exit 0
+        	exit 
         	;;
         *)
             	echo "Invalid option. Please try tgain."
