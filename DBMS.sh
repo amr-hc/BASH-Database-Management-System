@@ -1,12 +1,12 @@
 #!/bin/bash
 echo "------------------------------- WELCOME TO  DBMS -------------------------------"
-echo " => PLZ select option from the following: "
-select choice in "Create Database" "List Databases" "connect to Database" "Drop Database" "Exit"
-do
+echo " => PLZ write your sql code: "
 echo "--------------------------------------------------------------------------------"
+while true; do
+	read -p "mysql->" REPLY
     case $REPLY in
-        1)
-            	read -p "Enter database name: " dir_name
+        create\ database\ *)
+        	dir_name=$(echo $REPLY | awk -F" " '{print $3}')
 		if [[ -e $dir_name ]]; then
 			echo " this name is used "
 		else
@@ -20,15 +20,14 @@ echo "--------------------------------------------------------------------------
 			fi
 		fi
             	;;
-        2)
+        show\ database)
             	echo "Listing All databases:"
             	echo "---------"
             	ls -d */ | sed 's:/$::'
 		echo "---------"
             	;;
-        3)
-		read -p "Enter Database to connect: " dir_name
-
+        use\ *)
+		dir_name=$(echo $REPLY | awk -F" " '{print $2}')
 		if [ -d "$dir_name" ]; then
 			clear
     			./connect.sh $dir_name
@@ -37,17 +36,17 @@ echo "--------------------------------------------------------------------------
 		fi
 	       	
             	;;
-        4)
-		read -p "Enter database name: " dir_name
+        remove\ database\ *)
+        	dir_name=$(echo $REPLY | awk -F" " '{print $3}')
             	rm -r "$dir_name"
             	echo "Database '$dir_name' deleted."
            	;;
-        5)
+        exit)
             	echo "Exiting the software."
             	exit 0
             	;;
         *)
-            	echo "Invalid option. Please try tgain."
+            	echo "Syntax Error."
     esac
     
 done
