@@ -11,7 +11,7 @@ echo "--------------------------------------------------------------------------
 			echo " this name is used "
 		else
 		
-			if [[ ! "$dir_name" =~ ^[a-zA-Z_]+ || ! "$dir_name" =~ [a-zA-Z0-9_]+$  || "$dir_name" =~ [[:space:]] ]]; then
+			if [[ ! "$dir_name" =~ ^[a-zA-Z_]+[a-zA-Z0-9_]+$ ]]; then
 				echo "the name must consist of { _ or character or number } but can't start with number or have a space in it"
 			else
 				
@@ -30,9 +30,10 @@ echo "--------------------------------------------------------------------------
 		read -p "Enter Database to connect: " dir_name
 
 		if [ -d "$dir_name" ]; then
+			clear
     			./connect.sh $dir_name
 		else
-    			echo "Database Not Found"
+    			echo "Database  "$dir_name" Not Found"
 		fi
 	       	
             	;;

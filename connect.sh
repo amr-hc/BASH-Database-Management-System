@@ -3,12 +3,12 @@
 echo "DataBase $1" 
 source funcations.sh
 echo "--------------------------------------------------------------------------------"
-select choice in "Create Table" "List Tables" "Drop Table" "Insert into Table" "Select From Table" "Delete From Table" "Update Table"
+select choice in "Create Table" "List Tables" "Drop Table" "Insert into Table" "Select From Table" "Delete From Table" "Update Table" "return to select database" "Exit"
 do
     case $REPLY in
         1)
             	read -p "Enter table name: " table_name
-            	if [[ ! "$table_name" =~ ^[a-zA-Z_]+ || ! "$table_name" =~ [a-zA-Z0-9_]+$  || "$table_name" =~ [[:space:]] ]]; then
+            	if [[ ! "$table_name" =~ ^[a-zA-Z_]+[a-zA-Z0-9_]+$ ]]; then
 				echo "the name must consist of { _ or character or number } but can't start with number or have a space in it"
             	elif [[ -e "$1/$table_name"  ]]; then
     			echo "Sorry there is table have same name"
@@ -30,7 +30,7 @@ do
 					read -p "column name $j: " column_name
 					catch_duplicate
 					
-					while [[ ! $column_name =~ ^[a-zA-Z_]+[a-zA-Z0-9_]*$ || $find_column_name -eq 1 ]];
+					while [[ ! $column_name =~ ^[a-zA-Z_]+[a-zA-Z0-9_]+$ || $find_column_name -eq 1 ]];
 					do
 						echo "Not Valid"
 						read -p "column name $j: " column_name
@@ -99,6 +99,7 @@ do
 			       			break
 					else
 						echo "Sorry Invalid option"
+						#message
 					fi
 					;;
 					*) echo "Sorry Invalid option";;
@@ -110,9 +111,11 @@ do
 	    			unset types
     				unset columns
 	    			echo "Table '$table_name' created."
+	    			clear
 	    			./connect.sh $1
 	    		else
 	    			echo "input must be a number"
+	    			#message
 	    		fi
 
 		fi
@@ -123,6 +126,7 @@ do
             	echo "---------"
             	ls  $1 | sed ''
             	echo "---------"
+            	clear
             	./connect.sh $1
             	;;
         3)
@@ -425,6 +429,12 @@ do
             	fi
             	
             	;;
+        8)
+        	./DBMS.sh
+        	;;
+        9)	
+        	exit 0
+        	;;
         *)
             	echo "Invalid option. Please try tgain."
     esac
