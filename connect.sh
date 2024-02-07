@@ -8,8 +8,8 @@ do
     case $REPLY in
         1)
             	read -p "Enter table name: " table_name
-            	if [[ ! "$table_name" =~ ^[a-zA-Z_]+[a-zA-Z0-9_]+$ ]]; then
-				echo "the name must consist of { _ or character or number } but can't start with number or have a space in it"
+            	if [[ ! "$table_name" =~ ^[a-zA-Z]+[a-zA-Z0-9_]*$ ]]; then
+				echo "Table names must start with a letter and can contain letters, numbers, or underscores"
             	elif [[ -e "$1/$table_name"  ]]; then
     			echo "Sorry there is table have same name"
 		else
@@ -30,9 +30,13 @@ do
 					read -p "column name $j: " column_name
 					catch_duplicate
 					
-					while [[ ! $column_name =~ ^[a-zA-Z_]+[a-zA-Z0-9_]+$ || $find_column_name -eq 1 ]];
+					while [[ ! $column_name =~ ^[a-zA-Z]+[a-zA-Z0-9_]*$ || $find_column_name -eq 1 ]];
 					do
-						echo "Not Valid"
+						if [[ $find_column_name -eq 1 ]]; then
+							echo "This column name already Exist"
+						else
+							echo "Column names must start with a letter and can contain letters, numbers, or underscores"
+						fi
 						read -p "column name $j: " column_name
 						
 						catch_duplicate
@@ -46,7 +50,7 @@ do
 					do
 	    					case $REPLY in
 	    					        1)
-		    						column_type=[a-z]
+		    						column_type=[a-zA-Z]
 		    						break
 		    						;;
 		    					2)
@@ -57,7 +61,7 @@ do
 		    						column_type=[a-zA-Z0-9]
 		    						break
 		    						;;
-		    					*)	echo "Not Valid"
+		    					*)	echo "Not Valid Must choice from 3 types"
 	    				    	esac
 					done
 
