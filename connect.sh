@@ -3,8 +3,11 @@
 echo "DataBase $1" 
 source funcations.sh
 echo "--------------------------------------------------------------------------------"
-select choice in "Create Table" "List Tables" "Drop Table" "Insert into Table" "Select From Table" "Delete From Table" "Update Table" "return to select database" "Exit"
+while true;
 do
+echo -e "1)Create Table       2)List Tables        3)Drop Table \n\n4)Insert into Table  5)Select From Table  6)Delete From Table \n\n7)Update Table       8)return to select database    9)Exit\n"
+echo -e "choose a number from above\n"
+read -p "$1>>" REPLY
     case $REPLY in
         1)
             	read -p "Enter table name: " table_name
@@ -27,7 +30,7 @@ do
 				j=1
 				while [ $columns_count -gt 0 ];
 	    			do
-	    				#echo "$columns_count"
+	    				
 					read -p "column name $j: " column_name
 					catch_duplicate
 					
