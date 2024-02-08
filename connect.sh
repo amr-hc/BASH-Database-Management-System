@@ -15,7 +15,7 @@ do
 		else
     			
     			read -p "What is the number of columns in the table : " columns_count
-			if [[ $columns_count =~ [0-9]+ ]]; then
+			if [[ $columns_count =~ ^[0-9]+$ ]]; then
 				touch $1/$table_name
 				while (( $columns_count <= 0 )) 
 				do
@@ -97,7 +97,9 @@ do
 	    			select choice in "${columns[@]}"
 	    			do
 	    				case $REPLY in
-					[1-9]*)
+	    				0|*[!0-9]*) echo "Invalid option, you must select number of column";;
+					*)
+					
 					if [ "${#columns[@]}" -ge "$REPLY" ]; then
 						echo >> $1/$table_name
 			       			echo $REPLY >> $1/$table_name
@@ -106,7 +108,7 @@ do
 						echo "you should choose from the provided columns"
 					fi
 					;;
-					*) echo "Invalid option, you must select from columns in the table";;
+					
 	    				
 	    				
 	    				esac
@@ -286,11 +288,11 @@ do
             		select choice in ${columns_names[@]}
             		do
     				case $REPLY in
-    				0)
+    				0|*[!0-9]*)
     					echo "you must select from provided option"
     					
     					;;
-        			[0-9]*)
+        			*)
         			if [ $nf -ge "$REPLY" ]; then
         				
 		       			read -p "enter a value to delete : " value
@@ -347,11 +349,11 @@ do
             		select choice in ${columns_names[@]}
             		do
     				case $REPLY in
-    				0)
+    				0|*[!0-9]*)
     					echo "Sorry Invalid option"
     					
     					;;
-        			[0-9]*)
+        			*)
         			if [ $nf -ge "$REPLY" ]; then
         				
 		       			read -p "enter a value to search $choice = " value
@@ -368,11 +370,11 @@ do
     						select choice in ${columns_names[@]}
 					    		do
 				    				case $REPLY in
-				    				0)
+				    				0|*[!0-9]*)
 				    					echo "Sorry Invalid option"
 				    					
 				    					;;
-								[0-9]*)
+								*)
 									if [ $nf -ge "$REPLY" ]; then
 									
 										target_column=$REPLY
@@ -413,7 +415,7 @@ do
 									fi
 
 									;;
-								*)	echo "Sorry Invalid option";;
+								
 								
 								esac
 							done
@@ -439,7 +441,7 @@ do
 					echo "Sorry Invalid option"
 				fi
         			;;
-        			*) echo "Sorry Invalid option";;
+        			
     				
     				
     				esac
