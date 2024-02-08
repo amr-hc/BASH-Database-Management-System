@@ -1,0 +1,6 @@
+id:name:phone:address
+[0-9]:[a-zA-Z]:[0-9]:[a-zA-Z0-9]
+1
+1:amr:0103325577:mansoura
+2:ameer:0103325577:alex
+3:omnia:0103325999:cairo
