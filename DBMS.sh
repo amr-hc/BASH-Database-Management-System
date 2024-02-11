@@ -34,7 +34,7 @@ while true; do
             	ls -d */ | sed 's:/$::'
 		echo "---------"
             	;;
-        [uU][sS][eE]\ *)
+        [uU][sS][eE]\ [a-zA-Z]*)
         	nf=$(echo $REPLY | awk -F" " '{print NF}')
         	if [[ $nf -eq 2 ]]; then
 			dir_name=$(echo $REPLY | awk -F" " '{print $2}')
